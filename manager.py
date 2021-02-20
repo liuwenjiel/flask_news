@@ -8,9 +8,10 @@
 from datetime import timedelta
 
 from flask import Flask, session
+from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 from redis import StrictRedis
-from flask_session import Session
+from flask_wtf import CSRFProtect
 
 app = Flask(__name__)
 
@@ -47,8 +48,11 @@ redis_store = StrictRedis(host=Config.REDIS_HOST, port=Config.REDIS_PORT, decode
 # 创建Session对象，读取App中session配置信息
 Session(app)
 
+# 使用CSRFProtect保护app
+CSRFProtect(app)
 
-@app.route('/')
+
+@app.route('/', methods=['GET', "POST"])
 def hello_world():
     # 测试redis存数据
     redis_store.set('name', 'laowang')
