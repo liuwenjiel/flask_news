@@ -16,15 +16,15 @@ def hello_world():
     # print(session.get('name'))
 
     # 使用日志记录方法loggin进行输出可控
-    logging.debug("输入调试信息")
-    logging.info("输入详细信息")
-    logging.warning("输入警告信息")
-    logging.error("输入错误信息")
+    # logging.debug("输入调试信息")
+    # logging.info("输入详细信息")
+    # logging.warning("输入警告信息")
+    # logging.error("输入错误信息")
 
     # 也可以使用current_app来输出日志信息
-    current_app.logger.debug("输入调试信息")
-    current_app.logger.info("输入详细信息")
-    current_app.logger.warning("输入警告信息")
-    current_app.logger.error("输入错误信息")
+    # current_app.logger.debug("输入调试信息")
+    # current_app.logger.info("输入详细信息")
+    # current_app.logger.warning("输入警告信息")
+    # current_app.logger.error("输入错误信息")
 
     return 'hello world'
