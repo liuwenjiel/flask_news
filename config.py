@@ -1,0 +1,47 @@
+from datetime import timedelta
+
+from redis import StrictRedis
+
+
+# 设置配置信息（基类）
+class Config(object):
+    # 调试信息
+    DEBUG = True
+    SECRET_KEY = "gdksjhfksdhfl"
+
+    # 数据库配置信息
+    SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:root@localhost:3306/info"
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    # redis配置信息
+    REDIS_HOST = '127.0.0.1'
+    REDIS_PORT = 6379
+
+    # session配置信息
+    SESSION_TYPE = 'redis'  # 设置session存储类型
+    SQLALCHEMY_BINDS = StrictRedis(host=REDIS_HOST, port=REDIS_PORT)  # 指定session存储的redis服务器
+    SESSION_USE_SIGNER = True  # 设置签名存储
+    PERMANENT_SESSION_LIFETIME = timedelta(days=2)  # 设置session的有效期
+
+
+# 开发环境配置信息
+class DevelopConfig(Config):
+    pass
+
+
+# 生产（线上）环境配置信息
+class ProductConfig(Config):
+    DEBUG = False
+
+
+# 测试环境配置信息
+class TestConfig(Config):
+    pass
+
+
+# 提供一个统一的访问接口
+config_dict = {
+    "develop": DevelopConfig,
+    "product": ProductConfig,
+    "test": TestConfig
+}
