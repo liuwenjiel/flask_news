@@ -49,7 +49,7 @@ def create_app(config_name):
     from info.modules.passport import passport_blue
     app.register_blueprint(passport_blue)
 
-    print(app.url_map)
+    # print(app.url_map)
     return app
 
 

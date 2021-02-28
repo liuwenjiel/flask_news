@@ -13,6 +13,7 @@ class Config(object):
     # 数据库配置信息
     SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:root@localhost:3306/info"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_COMMIT_ON_TEARDOWN = True  # 每当改变数据的内容之后, 在视图函数结束的时候都会自动提交
 
     # redis配置信息
     REDIS_HOST = '127.0.0.1'
@@ -20,7 +21,7 @@ class Config(object):
 
     # session配置信息
     SESSION_TYPE = 'redis'  # 设置session存储类型
-    SQLALCHEMY_BINDS = StrictRedis(host=REDIS_HOST, port=REDIS_PORT)  # 指定session存储的redis服务器
+    SESSION_BINDS = StrictRedis(host=REDIS_HOST, port=REDIS_PORT)  # 指定session存储的redis服务器
     SESSION_USE_SIGNER = True  # 设置签名存储
     PERMANENT_SESSION_LIFETIME = timedelta(days=2)  # 设置session的有效期
 
