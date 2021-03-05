@@ -2,9 +2,10 @@ from info import redis_store
 # from info.modules.index import index_blue
 from . import index_blue
 import logging
-from flask import current_app, render_template, session
+from flask import current_app, render_template, session, jsonify
 
-from info.models import User
+from info.models import User, News
+from info.utils.response_code import RET
 
 
 @index_blue.route('/', methods=['GET', "POST"])
@@ -40,9 +41,22 @@ def hello_world():
         except Exception as e:
             current_app.logger.error(e)
 
-    # 3. 拼接用户数据，渲染页面
+    # 3. 查询热门新闻，根据点击量，查询前十条新闻
+    try:
+        news = News.query.order_by(News.clicks.desc()).limit(10).all()
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET.DBERR, errmsg="获取新闻失败")
+
+    # 将新闻对象列表转成字典列表
+    news_list = []
+    for item in news:
+        news_list.append(item.to_dict())
+
+    # 5. 拼接用户数据，渲染页面
     data = {
-        "user_info": user.to_dict() if user else ""
+        "user_info": user.to_dict() if user else "",
+        "news_list": news_list
     }
 
     return render_template("news/index.html", data=data)

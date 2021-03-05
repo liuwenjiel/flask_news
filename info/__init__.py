@@ -9,6 +9,8 @@ from flask_wtf.csrf import CSRFProtect, generate_csrf
 from config import config_dict
 
 # 定义redis_store变量
+from info.utils.commons import hot_news_filter
+
 redis_store = None
 
 # 定义db变量
@@ -48,6 +50,10 @@ def create_app(config_name):
     # 将认证蓝图passport_blue注册到app中
     from info.modules.passport import passport_blue
     app.register_blueprint(passport_blue)
+
+    # 将函数添加到系统默认的过滤器列表中
+    # 参数一：函数的名字 参数二：过滤器的名字
+    app.add_template_filter(hot_news_filter, "my_filter")
 
     # 使用请求钩子拦截所有的请求，统一的在cookie中设置csrf_token
     @app.after_request
