@@ -1,6 +1,8 @@
 import json
 import re
 import random
+from datetime import datetime
+
 from flask import request, current_app, make_response, jsonify, session
 from . import passport_blue
 from info.utils.captcha.captcha import captcha
@@ -101,7 +103,7 @@ def sms_code():
         return jsonify(errno=RET.DBERR, errmsg="删除redis图片验证码失败")
 
     # 8. 生成一个随机的短信验证码, 调用ccp发送短信,判断是否发送成功
-    sms_code = "%06d"%random.randint(0, 999999)
+    sms_code = "%06d" % random.randint(0, 999999)
     current_app.logger.debug("短信验证码是 = %s" % sms_code)
     # ccp = CCP()
     # # 参数1mobile: 要给哪个手机号发送短信    参数2: ["验证码",有效期]  参数3: 模板编号默认就是1
@@ -246,6 +248,31 @@ def login():
     # 6. 将用户的登录信息保存在session中
     session["user_id"] = user.id
 
+    # 6.1 记录用户最后一次的登录时间
+    user.last_login = datetime.now()
+    # try:
+    #     db.session.commit()
+    # except Exception as e:
+    #     current_app.logger.error(e)
+
     # 7. 返回响应
     return jsonify(errno=RET.OK, errmsg="登录成功")
 
+
+# 退出登录
+# 请求路径：/passport/logout
+# 请求方式：POST
+# 请求参数：无
+# 返回值：errno, errmsg
+@passport_blue.route('/logout', methods=['POST'])
+def logout():
+    """
+    1.清除session信息
+    2.返回响应
+    :return:
+    """
+    # 1.清除session信息
+    session.pop("user_id", None)
+
+    # 2.返回响应
+    return jsonify(errno=RET.OK, errmsg="退出成功")
