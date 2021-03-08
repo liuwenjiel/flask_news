@@ -4,7 +4,7 @@ from . import index_blue
 import logging
 from flask import current_app, render_template, session, jsonify
 
-from info.models import User, News
+from info.models import User, News, Category
 from info.utils.response_code import RET
 
 
@@ -48,15 +48,28 @@ def hello_world():
         current_app.logger.error(e)
         return jsonify(errno=RET.DBERR, errmsg="获取新闻失败")
 
-    # 将新闻对象列表转成字典列表
+    # 4. 将新闻对象列表转成字典列表
     news_list = []
     for item in news:
         news_list.append(item.to_dict())
 
+    # 5. 查询所有的分类数据
+    try:
+        categories = Category.query.all()
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET.DBERR, errmsg="获取分类失败")
+
+    # 6. 将分类的对象列表转成对象列表
+    categories_list = []
+    for category in categories:
+        categories_list.append(category.to_dict())
+
     # 5. 拼接用户数据，渲染页面
     data = {
         "user_info": user.to_dict() if user else "",
-        "news_list": news_list
+        "news_list": news_list,
+        "categories_list": categories_list
     }
 
     return render_template("news/index.html", data=data)
