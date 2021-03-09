@@ -46,6 +46,7 @@ $(function () {
         if ((canScrollHeight - nowScroll) < 100) {
             // TODO 判断页数，去更新新闻数据
             if (!house_data_querying) {
+                console.log("*******")
                 // 将`是否正在向后端查询新闻数据`的标志设置为真
                 house_data_querying = true;
                 // 如果当前页面数还没到达总页数
@@ -67,13 +68,14 @@ function updateNewsData() {
         "cid": currentCid,
         'per_page': 5
     }
-    /*
+
     $.get("/newslist", params, function (resp) {
         // 设置 `数据正在查询数据` 变量为 false，以便下次上拉加载
         house_data_querying = false
         if (resp) {
             // // 记录总页数
             total_page = resp.totalPage
+
             // 如果当前页数为1，则清空原有数据
             if (cur_page == 1) {
                 $(".list_con").html('')
@@ -97,5 +99,5 @@ function updateNewsData() {
             }
         }
     })
-    */
+
 }
