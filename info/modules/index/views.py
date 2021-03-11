@@ -61,15 +61,15 @@ def show_index():
         return jsonify(errno=RET.DBERR, errmsg="获取分类失败")
 
     # 6. 将分类的对象列表转成对象列表
-    categories_list = []
+    category_list = []
     for category in categories:
-        categories_list.append(category.to_dict())
+        category_list.append(category.to_dict())
 
     # 5. 拼接用户数据，渲染页面
     data = {
         "user_info": user.to_dict() if user else "",
         "news_list": news_list,
-        "categories_list": categories_list
+        "category_list": category_list
     }
 
     return render_template("news/index.html", data=data)

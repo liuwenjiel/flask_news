@@ -46,7 +46,6 @@ $(function () {
         if ((canScrollHeight - nowScroll) < 100) {
             // TODO 判断页数，去更新新闻数据
             if (!house_data_querying) {
-                console.log("*******")
                 // 将`是否正在向后端查询新闻数据`的标志设置为真
                 house_data_querying = true;
                 // 如果当前页面数还没到达总页数
