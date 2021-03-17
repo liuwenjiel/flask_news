@@ -47,11 +47,19 @@ def news_detail(news_id):
     for item_news in click_news:
         click_news_list.append(item_news.to_dict())
 
+    # 5.判断用户是否收藏该新闻
+    is_collected = False
+    # 用户需要登录并且该新闻在用户收藏新闻的列表中
+    if g.user:
+        if news in g.user.collection_news:
+            is_collected = True
+
     # 5.携带数据，渲染页面
     data = {
         "news_info": news.to_dict(),
         "user_info": g.user.to_dict() if g.user else "",
-        "news_list": click_news_list
+        "news_list": click_news_list,
+        "is_collected": is_collected
     }
 
     return render_template("news/detail.html", data=data)
