@@ -2,8 +2,8 @@ from qiniu import Auth, put_file, etag, put_data
 import qiniu.config
 
 # 需要填写你的 Access Key 和 Secret Key
-access_key = 'v3n5FPnRvLujRroKe3X9FxjMSgtWCmMWBeharusu'
-secret_key = 'd3uJUlaQ9iKh0b5XkhU-Tlx5hjrDiWDDeHA4xotw'
+access_key = 'TpaE-lU4-FJ6Hz_oCXUEMYWbln35YduYsPl0YVqT'
+secret_key = 'F9nwaOeWk75RyLiNzn-VqrZqzBQ2WjIEL0ZC1z-u'
 
 
 def image_storage(image_data):
@@ -11,14 +11,14 @@ def image_storage(image_data):
     q = Auth(access_key, secret_key)
 
     # 要上传的空间
-    bucket_name = 'info36'
+    bucket_name = 'flaskinfo'
 
     # 上传到七牛后保存的文件名,如果不指定,那么名字由七牛云维护
     # key = 'haha.png'
     key = None
 
     # 生成上传 Token，可以指定过期时间等
-    token = q.upload_token(bucket_name, key, 3600)
+    token = q.upload_token(bucket_name, key, 36000000)
 
     # 要上传文件的本地路径
     # localfile = './44.jpg'
