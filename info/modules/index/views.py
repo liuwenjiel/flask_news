@@ -135,3 +135,13 @@ def newslist():
     # 6. 携带数据，返回响应
     return jsonify(errno=RET.OK, errmsg="获取新闻成功",
                    totalPage=totalPage, currentPage=currentPage, newsList=news_list)
+
+
+# 统一的返回404页面
+@index_blue.route('/404')
+@user_login_data
+def page_not_found():
+    data = {
+        "user_info": g.user.to_dict() if g.user else ""
+    }
+    return render_template("news/404.html", data=data)

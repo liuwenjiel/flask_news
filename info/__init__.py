@@ -1,7 +1,7 @@
 import logging
 from logging.handlers import RotatingFileHandler
 
-from flask import Flask
+from flask import Flask, render_template, redirect
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 from redis import StrictRedis
@@ -78,6 +78,12 @@ def create_app(config_name):
 
         # 返回响应
         return resp
+
+    # 使用errorhandler统一处理404异常信息
+    @app.errorhandler(404)
+    def page_not_found(e):
+        # return render_template("news/404.html", data={})
+        return redirect("/404")  # 重定向
 
     # print(app.url_map)
     return app
