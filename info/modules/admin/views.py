@@ -204,3 +204,131 @@ def user_list():
         "user_list": user_list
     }
     return render_template("admin/user_list.html", data=data)
+
+
+# 获取/设置新闻审核列表
+# 请求路径: /admin/news_review
+# 请求方式: GET
+# 请求参数: GET, p,keywords
+# 返回值:渲染user_list.html页面,data字典数据
+@admin_blue.route('/news_review')
+def news_review():
+    """
+      1. 获取参数,p,keywords(模糊查询)
+      2. 参数类型转换
+      3. 分页查询用户数据
+      4. 获取分页对象属性,总页数,当前页,当前页对象列表
+      5. 将对象列表,转成字典列表
+      6. 拼接数据,渲染页面
+      :return:
+      """
+    # 1. 获取参数,p
+    page = request.args.get("p", "1")
+    keywords = request.args.get("keywords", "")
+
+    # 2. 参数类型转换
+    try:
+        page = int(page)
+    except Exception as e:
+        page = 1
+
+    # 3. 分页查询待审核,未通过的新闻数据
+    try:
+
+        # 3.1判断是否有填写搜索关键
+        filters = [News.status != 0]
+        if keywords:
+            # 标题包含keywords
+            filters.append(News.title.contains(keywords))
+
+        paginate = News.query.filter(*filters).order_by(News.create_time.desc()).paginate(page, 10, False)
+    except Exception as e:
+        current_app.logger.error(e)
+        return render_template("admin/news_review.html", errmsg="获取新闻失败")
+
+    # 4. 获取分页对象属性,总页数,当前页,当前页对象列表
+    totalPage = paginate.pages
+    currentPage = paginate.page
+    items = paginate.items
+
+    # 5. 将对象列表,转成字典列表
+    news_list = []
+    for news in items:
+        news_list.append(news.to_review_dict())
+
+    # 6. 拼接数据,渲染页面
+    data = {
+        "totalPage": totalPage,
+        "currentPage": currentPage,
+        "news_list": news_list
+    }
+    return render_template("admin/news_review.html", data=data)
+
+
+# 获取/设置新闻审核详情
+# 请求路径: /admin/news_review_detail
+# 请求方式: GET,POST
+# 请求参数: GET, news_id, POST,news_id, action
+# 返回值:GET,渲染news_review_detail.html页面,data字典数据
+@admin_blue.route('/news_review_detail', methods=['GET', 'POST'])
+def news_review_detail():
+    """
+    1.判断请求方式,如果是GET
+    2.获取新闻编号
+    3.获取新闻对象,并判断新闻对象是否存在
+    4.携带新闻对象的数据渲染页面
+    5.如果是POST请求,获取参数
+    6.校验操作类型
+    7.根据编号,获取新闻对象,判断新闻对象是否存在
+    8.根据操作类型改变新闻的状态
+    9.返回响应
+    :return:
+    """
+    # 1.判断请求方式,如果是GET
+    if request.method == 'GET':
+        # 2.获取新闻编号
+        news_id = request.args.get("news_id")
+
+        # 3.获取新闻对象,并判断新闻对象是否存在
+        try:
+            news = News.query.get(news_id)
+        except Exception as e:
+            current_app.logger.error(e)
+            return render_template("admin/news_review_detail.html", errmsg="新闻获取失败")
+
+        if not news:
+            return render_template("admin/news_review_detail.html", errmsg="该新闻不存在")
+
+        # 4.携带新闻对象的数据渲染页面
+        return render_template("admin/news_review_detail.html", news=news.to_dict())
+
+    # 5.如果是POST请求,获取参数 ajax请求
+    action = request.json.get("action")
+    news_id = request.json.get("news_id")
+
+    # 6.校验操作类型,为空校验
+    if not all([news_id, action]):
+        return jsonify(errno=RET.PARAMERR, errmsg="参数不全")
+
+    if not action in ["accept", "reject"]:
+        return jsonify(errno=RET.DATAERR, errmsg="操作类型有误")
+
+    # 7.根据编号,获取新闻对象,判断新闻对象是否存在
+    try:
+        news = News.query.get(news_id)
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET.DBERR, errmsg="获取新闻失败")
+
+    if not news:
+        return jsonify(errno=RET.NODATA, errmsg="该新闻不存在")
+
+    # 8.根据操作类型改变新闻的状态
+    if action == "accept":
+        news.status = 0
+    else:
+        news.status = -1
+        news.reason = request.json.get("reason", "")
+
+    # 9.返回响应
+    return jsonify(errno=RET.OK, errmsg="操作成功")

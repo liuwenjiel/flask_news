@@ -113,7 +113,7 @@ def newslist():
 
     # 3. 分页查询
     try:
-        filters = []
+        filters = [News.status == 0]
         # 判断新闻的分类是否为1
         if cid != "1":
             filters.append(News.category_id == cid)
