@@ -67,8 +67,8 @@ def add_test_user(test):
     # 2.for循环创建1000个用户
     for i in range(0, 1000):
         user = User()
-        user.nick_name = "测试%s" % i
-        user.mobile = "138%08d" % i
+        user.nick_name = "测试%s%s" % (test, i)
+        user.mobile = "137%08d" % i
         user.password_hash = "pbkdf2:sha256:150000$W5PulAfk$be63b27c8186d9a7dd13329f587b4e67d73d4cd8909f6e6adb0172ae31723baf"
         # 设置用户的登陆时间为近31天的
         user.last_login = datetime.now() - timedelta(seconds=randint(0, 3600 * 24 * 31))
