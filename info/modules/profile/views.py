@@ -287,6 +287,10 @@ def news_release():
     news.category_id = category_id
     news.user_id = g.user.id
     news.status = 1  # 表示审核中
+    from recommender.kernel import init_news_label, update_user_label
+    init_news_label([news])
+    type = 'RELEASE_NEWS'
+    update_user_label(news, type)
 
     # 7. 保存到数据
     try:

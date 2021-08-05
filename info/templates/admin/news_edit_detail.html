@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>新经资讯后台管理</title>
+	<title>新闻推荐系统后台管理</title>
 	<link rel="stylesheet" type="text/css" href="../../static/admin/css/reset.css">
 	<link rel="stylesheet" type="text/css" href="../../static/admin/css/main.css">
 	<script type="text/javascript" src="../../static/admin/js/jquery-1.12.4.min.js"></script>
@@ -26,14 +26,10 @@
 				<label>新闻分类：</label>
 				<select class="sel_opt" name="category_id">
 
-                    {% for category in category_list if category.id!= 1 %}
+                    {% for category in category_list if category.id!= 1 and  category.id!= 11%}
                         <option value="{{ category.id }}">{{ category.name }}</option>
                     {% endfor %}
 
-
-{#					<option value="">分类一</option>#}
-{#					<option value="">分类二</option>#}
-{#					<option value="">分类三</option>#}
 				</select>
 			</div>
 			<div class="form_group">

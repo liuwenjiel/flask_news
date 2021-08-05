@@ -32,6 +32,7 @@ class User(BaseModel, db.Model):
 
     id = db.Column(db.Integer, primary_key=True)  # 用户编号
     nick_name = db.Column(db.String(32), unique=True, nullable=False)  # 用户昵称
+    user_label = db.Column(db.PickleType, default={})
     password_hash = db.Column(db.String(128), nullable=False)  # 加密的密码
     mobile = db.Column(db.String(11), unique=True, nullable=False)  # 手机号
     avatar_url = db.Column(db.String(256))  # 用户头像路径
@@ -106,6 +107,7 @@ class News(BaseModel, db.Model):
     source = db.Column(db.String(64), nullable=False)  # 新闻来源
     digest = db.Column(db.String(512), nullable=False)  # 新闻摘要
     content = db.Column(db.Text, nullable=False)  # 新闻内容
+    news_label = db.Column(db.PickleType, default={})
     clicks = db.Column(db.Integer, default=0)  # 浏览量
     index_image_url = db.Column(db.String(256))  # 新闻列表图片路径
     category_id = db.Column(db.Integer, db.ForeignKey("info_category.id"))

@@ -10,7 +10,7 @@ from flask import current_app
 from info import create_app, db, models  # 导入models的作用是让整个应用程序知道有models的存在
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
-from info.models import User
+from info.models import User, News, Category
 from datetime import datetime, timedelta
 
 # 调用方法,获取app
@@ -59,19 +59,22 @@ def create_superuser(username, password):
 
 
 # 为了图表好看,添加测试用户
+# $ python manager.py add_test_user -t 1
 @manager.option('-t', '--test', dest='test')
 def add_test_user(test):
     # 1.定义容器
     user_list = []
 
     # 2.for循环创建1000个用户
-    for i in range(0, 1000):
+    for i in range(5000, 5100):
         user = User()
         user.nick_name = "测试%s%s" % (test, i)
-        user.mobile = "137%08d" % i
+        user.mobile = "138%08d" % i
         user.password_hash = "pbkdf2:sha256:150000$W5PulAfk$be63b27c8186d9a7dd13329f587b4e67d73d4cd8909f6e6adb0172ae31723baf"
         # 设置用户的登陆时间为近31天的
-        user.last_login = datetime.now() - timedelta(seconds=randint(0, 3600 * 24 * 31))
+        user.last_login = datetime.now() - timedelta(seconds=randint(0, 3600 * 2 * 31))
+        from recommender.kernel import init_user_label
+        init_user_label([user])
 
         user_list.append(user)
 
@@ -86,5 +89,22 @@ def add_test_user(test):
     return "添加测试用户成功"
 
 
+@manager.option('-n', '--test', dest='test')
+def manager_add_news_label(test):
+    import jieba.analyse
+    news = News.query.all()
+    jieba.analyse.set_stop_words("停用词.txt")
+    from recommender.kernel import init_news_label
+    init_news_label(news)
+
+
+@manager.option('-u', '--test', dest='test')
+def manager_add_user_label(test):
+    users = User.query.all()
+    from recommender.kernel import init_user_label
+    init_user_label(users)
+
+
 if __name__ == '__main__':
     manager.run()
+

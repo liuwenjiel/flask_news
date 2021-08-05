@@ -104,6 +104,7 @@ def sms_code():
 
     # 8. 生成一个随机的短信验证码, 调用ccp发送短信,判断是否发送成功
     sms_code = "%06d" % random.randint(0, 999999)
+    sms_code = 666666
     current_app.logger.debug("短信验证码是 = %s" % sms_code)
     # ccp = CCP()
     # # 参数1mobile: 要给哪个手机号发送短信    参数2: ["验证码",有效期]  参数3: 模板编号默认就是1
@@ -191,6 +192,9 @@ def register():
     user.password = password  # 密码的加密处理
     user.mobile = mobile
     user.signature = "该用户很懒,什么都没写"
+
+    from recommender.kernel import init_user_label
+    init_user_label([user])
 
     db.session.add(user)
     db.session.commit()

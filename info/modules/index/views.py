@@ -8,6 +8,8 @@ from info.models import User, News, Category
 from info.utils.response_code import RET
 from info.utils.commons import user_login_data
 
+import random
+
 
 @index_blue.route('/', methods=['GET', "POST"])
 @user_login_data
@@ -80,7 +82,7 @@ def show_index():
 # 处理网站logo
 @index_blue.route('/favicon.ico')
 def get_web_logo():
-    return current_app.send_static_file('news/favicon.ico')
+    return current_app.send_static_file('news/favicon_new.ico')
 
 
 # 首页新闻列表
@@ -118,14 +120,25 @@ def newslist():
         if cid != "1":
             filters.append(News.category_id == cid)
         paginate = News.query.filter(*filters).order_by(News.create_time.desc()).paginate(page, pre_page, False)
+
+        if cid == "11":
+            print("*****")
+            from recommender.kernel import create_user_to_news_list
+            paginate = create_user_to_news_list()
+
     except Exception as e:
         current_app.logger.error(e)
         return jsonify(errno=RET.DBERR, errmsg="获取新闻失败")
 
     # 4. 获取到分页对象中的属性，总页数，当前页，当前页的对象列表
-    totalPage = paginate.pages
-    currentPage = paginate.page
-    items = paginate.items
+    if cid != "11":
+        totalPage = paginate.pages
+        currentPage = paginate.page
+        items = paginate.items
+    else:
+        totalPage = 1
+        currentPage = 1
+        items = paginate
 
     # 5. 将对象列表转成字典列表
     news_list = []

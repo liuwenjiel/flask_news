@@ -36,5 +36,5 @@ def image_storage(image_data):
 # 用来测试图片上传的
 if __name__ == '__main__':
     # 使用with测试,可以自动关闭流
-    with open('./44.jpg', 'rb') as f:
+    with open('./2.jpg', 'rb') as f:
         image_storage(f.read())

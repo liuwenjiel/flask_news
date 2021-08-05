@@ -3,6 +3,7 @@ from info.models import News, User, Comment, CommentLike
 from info.utils.response_code import RET
 from info.utils.commons import user_login_data
 from info import db
+from recommender.kernel import update_user_label
 
 from . import news_blue
 
@@ -28,6 +29,8 @@ def news_detail(news_id):
     # 1.根据新闻编号，查询新闻对象
     try:
         news = News.query.get(news_id)
+        type = 'VIEW_NEWS'
+        update_user_label(news, type)
     except Exception as e:
         current_app.logger.error(e)
         return jsonify(errno=RET.DBERR, errmsg="获取新闻失败")
@@ -36,9 +39,9 @@ def news_detail(news_id):
     if not news:
         abort(404)
 
-    # 3.获取前6条热门新闻
+    # 3.获取前8条热门新闻
     try:
-        click_news = News.query.order_by(News.clicks.desc()).limit(6).all()
+        click_news = News.query.order_by(News.clicks.desc()).limit(8).all()
     except Exception as e:
         current_app.logger.error(e)
         return jsonify(errno=RET.DBERR, errmsg="获取新闻失败")
@@ -150,6 +153,8 @@ def news_collect():
     # 5. 根据新闻的编号取出新闻对象
     try:
         news = News.query.get(news_id)
+        type = 'COLLECTION' if action == "collect" else 'DEL_COLLECTION'
+        update_user_label(news, type)
     except Exception as e:
         current_app.logger.error(e)
         return jsonify(errno=RET.DBERR, errmsg="新闻获取失败")
@@ -206,6 +211,8 @@ def news_comment():
     # 4. 根据新闻编号取出新闻对象,判断新闻是否存在
     try:
         news = News.query.get(news_id)
+        type = 'COMMIT'
+        update_user_label(news, type)
     except Exception as e:
         current_app.logger.error(e)
         return jsonify(errno=RET.DBERR, errmsg="获取新闻失败")
@@ -353,6 +360,8 @@ def followed_user():
     # - 4.根据作者编号取出作者对象,判断作者对象是否存在
     try:
         author = User.query.get(author_id)
+        type = 'FOCUS' if action == "follow" else 'DEL_FOCUS'
+        update_user_label(author, type, sign=0)
     except Exception as e:
         current_app.logger.error(e)
         return jsonify(errno=RET.DBERR, errmsg="获取作者失败")

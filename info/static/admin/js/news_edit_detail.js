@@ -40,3 +40,17 @@ $(function(){
 function cancel() {
     history.go(-1)
 }
+
+//退出登录
+function logout() {
+
+    $.ajax({
+        url:'/passport/logout',
+        type:'post',
+        headers:{'X-CSRFToken':getCookie('csrf_token')},
+        success:function (resp) {
+            window.location.reload()
+        }
+    })
+
+}
